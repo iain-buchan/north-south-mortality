@@ -104,7 +104,6 @@ Script 3 lists its 21 categories and five groups, with their codes, at the top o
 
 ## How the code was checked
 
-- The three scripts were written from a Python implementation of the same analysis. Every number in their 14 output files agrees with an independent Python run to within rounding at the sixth decimal place.
 - Script 1 checks its Poisson fit against `glm()`.
 - Script 2 compares the sources of deaths cell by cell wherever two of them cover the same deaths, and recomputes the excess deaths published in the 2018 paper.
 - Script 3 checks that its categories add up to all causes in every age group, area and period, and compares its NOMIS rates with the rates from the ONS extract.
