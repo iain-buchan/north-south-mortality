@@ -1,6 +1,6 @@
 # =====================================================================
 # North-South divide in English mortality by cause of death, 1981-2025
-# Script 2 of 3: ages 25-49 by cause and sex, on the cause definitions of the 2018 paper
+# Script 2 of 4: ages 25-49 by cause and sex, on the cause definitions of the 2018 paper
 #
 # Iain Buchan, 15 Nov 2026. Exploratory work in progress; not peer reviewed.
 #
