@@ -1,6 +1,6 @@
 # =====================================================================
 # North-South divide in English mortality by cause of death, 1981-2025
-# Script 5 of 5: contour plots - the northern excess in every year and five-year age group, for six
+# Script 5 of 6: contour plots - the northern excess in every year and five-year age group, for six
 #                cause groups and for persons, men and women
 #
 # Iain Buchan, 18 Nov 2026. Exploratory work in progress; not peer reviewed.
@@ -19,16 +19,17 @@
 #   alone gives. Persons pool the two sexes without adjustment.
 #   Where North and South together have fewer than 20 deaths in a cell, the ratio is too unstable to
 #   show. Each plot is drawn twice:
-#     a  the plain contour plot: those cells, and cells with no data, are given zero excess. Zero is
-#        the top of the band '-20 to 0', so a block of such cells takes that band's colour and
-#        looks like a small northern advantage.
-#     b  those cells are grey, and a dot marks every other cell whose excess cannot be told from
-#        zero at the 5% level.
+#     a  the plain contour plot, in the colours of the Stata plots: those cells, and cells with no
+#        data, are given zero excess. Zero is the top of the band '-20 to 0', so a block of such
+#        cells takes that band's colour and looks like a small northern advantage.
+#     b  those cells are grey, a dot marks every other cell whose excess cannot be told from zero
+#        at the 5% level, and the colours are ones that readers with any type of colour vision can
+#        tell apart.
 #   The test is exact: given the deaths in a cell, the number in the North is binomial, with
 #   probability equal to the North's share of the population at risk. It allows for Poisson variation
 #   only, and makes no allowance for the number of cells tested: about one cell in 20 with no true
 #   excess will pass it.
-#   Colours. The excess is capped at the ends of each plot's scale, so the top band also holds every
+#   Bands. The excess is capped at the ends of each plot's scale, so the top band also holds every
 #   higher value and the bottom band every lower one. A value on a cut belongs to the band below it.
 #   Between cells the contours interpolate linearly. In version b each cell is also filled flat with
 #   its own colour, which shows wherever a neighbouring cell is grey, so that no cell with 20 or more
@@ -37,6 +38,14 @@
 #   accidents include accidental poisoning by drugs and alcohol, and drug poisoning includes
 #   suicides. 'Cardiovascular, diabetes and obesity' adds three series, of which obesity is counted
 #   on any mention, so some deaths are counted twice. Drug poisoning was not supplied before 1993.
+#   Colours of version b. Blue where the North is lower; where it is higher, a ramp from light
+#   yellow through orange and red to dark plum, each band darker than the one below it. Grey is
+#   kept for cells with no estimate. The ten colours were chosen by measurement: colour differences
+#   in OKLab (x 100), in normal vision and with protan, deutan and tritan deficiency simulated by
+#   the method of Machado, Oliveira and Fernandes (2009). The two closest bands are 8.6 apart, and
+#   the closest pair on opposite sides of zero 13.4 apart. In the Stata colours of version a,
+#   '0 to 20' and '20 to 40' are 2.3 apart in normal vision, and 'below -20' and '100 to 150' are
+#   1.0 apart with deutan deficiency.
 #   The stepped black lines follow birth cohorts: one age group older every five years.
 #   The threshold of 20 deaths is the one that best reproduces contour plots of the same data drawn
 #   independently in Stata.
@@ -74,8 +83,10 @@ test_level <- 0.05
 years <- 1981:2025
 ages  <- c("<1", "01-04", sprintf("%02d-%02d", seq(5, 80, 5), seq(9, 84, 5)), "85+")
 cuts  <- c(-40, -20, 0, 20, 40, 60, 80, 100, 150, 200, 250)                  # edges of the colour bands, %
-band_cols <- c("#55752F", "#00FF80", "#FFFF4D", "#FFFF00", "#FFD200", "#FF7F00", "#FF0000", "#C10534", "#90353B", "#000000")
-grey_col  <- "#C8C8C8"
+# colours of the bands, from 'below -20' to '200 or more'
+band_cols <- list(a = c("#55752F", "#00FF80", "#FFFF4D", "#FFFF00", "#FFD200", "#FF7F00", "#FF0000", "#C10534", "#90353B", "#000000"),     # the Stata plots
+                  b = c("#347EC4", "#ABDBFE", "#FEF1A1", "#FBCE25", "#F6A100", "#EB7007", "#DB2E1E", "#AA1546", "#710F47", "#3B0A30"))
+grey_col  <- "#A6A6A6"                                   # cells with no estimate, in version b
 # cause groups (series of script 1), the top of each plot's colour scale, and the words used in captions
 groups <- list("All" = "All causes", "Accidents" = "Accidents", "Alcohol" = "Alcohol",
                "Cardiovascular, diabetes and obesity" = c("Cardiovascular", "Diabetes", "Obesity"),
@@ -87,10 +98,11 @@ cause_words <- c("All" = "all causes", "Accidents" = "accidents", "Alcohol" = "a
 sexes     <- c(people = "all", male = "male", female = "female")           # file name -> word in the legend title
 sex_words <- c(people = "persons", male = "men", female = "women")
 minus <- intToUtf8(8722); dash <- intToUtf8(8211)
+sig <- function(v, digits = 4) ifelse(is.na(v), NA_character_, formatC(v, format = "g", digits = digits))      # p values as text, so that none is written with spurious decimals
 
 if (!file.exists(in_file)) stop("Run script 1 first: ", in_file, " is missing.")
 dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
-stopifnot(length(band_cols) == length(cuts) - 1, all(scale_top %in% cuts), identical(names(scale_top), names(groups)))
+stopifnot(all(lengths(band_cols) == length(cuts) - 1), all(scale_top %in% cuts), identical(names(scale_top), names(groups)))
 
 # ---- 1. deaths and populations in every cell ----------------------------------------------
 cells <- read_csv(in_file, show_col_types = FALSE) %>% filter(area %in% c("North", "South"))      # South includes London
@@ -125,7 +137,8 @@ x <- x %>% mutate(unclear = status == "drawn" & p_value >= test_level,
   arrange(cause, sex, year, agecat)
 
 write_csv(x %>% transmute(cause, sex, year, age, deaths_North, deaths_South, pop_North, pop_South,
-                          rate_ratio = round(rate_ratio, 5), excess_pct = round(excess, 2), status, p_value = signif(p_value, 4), unclear,
+                          rate_ratio = ifelse(is.finite(rate_ratio), sprintf("%.5f", rate_ratio), as.character(rate_ratio)), excess_pct = round(excess, 2), status,
+                          p_value = sig(p_value), unclear,
                           drawn_a = round(value_a, 2), drawn_b = round(value_b, 2), scale_top = cap),
           file.path(outdir, "contour_data.csv"))
 summ <- x %>% group_by(cause, sex) %>%
@@ -168,7 +181,7 @@ draw <- function(d, version, legend_title, cap, overview = FALSE) {
                         size = if (overview) 0.35 else 0.9, stroke = if (overview) 0.12 else 0.25) +
       scale_alpha_manual(name = NULL, values = setNames(1, grey_key), guide = guide_legend(order = 2)) +
       scale_shape_manual(name = NULL, values = setNames(21, dot_key), guide = guide_legend(order = 3, override.aes = list(size = 1.6, stroke = 0.4)))
-  p + scale_fill_manual(values = setNames(band_cols[seq_len(bands)], labs), limits = labs, drop = FALSE, name = legend_title,
+  p + scale_fill_manual(values = setNames(band_cols[[version]][seq_len(bands)], labs), limits = labs, drop = FALSE, name = legend_title,
                         aesthetics = c("fill", "colour"), guide = guide_legend(reverse = TRUE, order = 1)) +
     scale_x_continuous(breaks = x_breaks, limits = c(1981, 2025), expand = expansion(add = 0.6)) +
     scale_y_continuous(breaks = seq_along(ages), labels = sub("^<1$", "<01", ages), limits = c(1, 19), expand = expansion(add = 0.5)) +
@@ -249,7 +262,8 @@ what <- paste("Percentage by which the death rate in the North exceeds that in t
 tail_note <- paste("The end bands of the colour scale are open. Cause groups are those of the November 2026 ONS extract and overlap;",
                    "drug poisoning was not supplied before 1993. Source: ONS death registrations and mid-year population estimates.")
 note_a <- paste(what, sprintf("Cells with fewer than %d deaths in the two areas together, and cells with no data, are drawn as zero excess.", min_deaths), tail_note)
-note_b <- paste(what, sprintf("Grey marks cells with fewer than %d deaths in the two areas together, or no data.", min_deaths),
+note_b <- paste(what, "Blue: the North lower; yellow through red to plum: the North higher.",
+                sprintf("Grey marks cells with fewer than %d deaths in the two areas together, or no data.", min_deaths),
                 sprintf("A dot marks a cell whose excess cannot be told from zero at the %g%% level (exact binomial test, with no allowance for the number of cells tested).", 100 * test_level),
                 tail_note)
 span <- paste0(min(years), dash, max(years))
