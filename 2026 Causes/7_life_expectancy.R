@@ -320,7 +320,7 @@ captions <- c(
         sprintf("The 95%% confidence intervals reach no more than %.2f years either side of the lines and are in life_expectancy_by_year.csv.", max(z975 * c(by_year$se_North, by_year$se_South))), src),
   "",
   paste0("Figure 8. The North", dash, "South gap in life expectancy at birth, by the age band in which the deaths occur, by sex and period, 1981", dash, "2025"),
-  paste(c("Each bar is the gap in life expectancy (South minus North), in years, divided among four age bands by Arriaga's method (the mean of its two directions); the number above it is the gap.",
+  paste(c(paste0("Each bar is the gap in life expectancy (South minus North), in years, divided among four age bands by Arriaga", intToUtf8(8217), "s method (the mean of its two directions); the number above it is the gap."),
           "Five-year periods to", paste0("2015", dash, "19,"), "then", paste0("2020", dash, "22"), "and", paste0("2023", dash, "25."), "The South includes London.", neg_note,
           "The 95% intervals are in gap_by_age_band.csv.", src), collapse = " "))
 writeLines(enc2utf8(captions), file.path(outdir, "life_expectancy_captions.txt"), useBytes = TRUE)
