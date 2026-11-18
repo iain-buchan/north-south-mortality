@@ -17,6 +17,7 @@ It follows two papers:
 | [2_like_for_like_2018_definitions.R](2_like_for_like_2018_definitions.R) | Ages 25–49 by cause and sex, 1981–2025, on the cause definitions of the 2018 paper, with the three sources of deaths checked against each other |
 | [3_other_causes_split.R](3_other_causes_split.R) | The residual ‘other causes’ of script 1 split into categories that do not overlap, under 75, for 2015–19, 2020–24 and 2021–25 |
 | [4_figures_by_period.R](4_figures_by_period.R) | Two charts from the output of script 2, as SVG and PNG: the North–South gap in standardised death rates and the percentage northern excess at ages 25–49, by cause and sex, in six periods from 1981–90 to 2023–25 |
+| [5_contour_plots.R](5_contour_plots.R) | Contour plots from an output of script 1, as SVG and PNG: the percentage northern excess in every year and five-year age group, 1981–2025, for six cause groups and for persons, men and women. Each plot is drawn twice, the second time with the cells that have too few deaths left grey and the cells with no clear excess marked |
 | [data/](data/) | The input files below |
 
 ## Data
@@ -41,7 +42,7 @@ Why NOMIS as well as the ONS extracts:
 
 ## Running the code
 
-R 4 with the packages readxl, dplyr (1.1.0 or later), tidyr and readr, plus ggplot2 and svglite for the charts; the scripts install any that are missing. Set the working directory to this folder and run the scripts in order:
+R 4 with the packages readxl, dplyr (1.1.0 or later), tidyr and readr, plus ggplot2 (3.4.0 or later) and svglite for the charts; the scripts install any that are missing. Set the working directory to this folder and run the scripts in order:
 
 ```r
 setwd("path/to/2026 Causes")
@@ -49,9 +50,10 @@ source("1_cause_decomposition.R")              # about a minute
 source("2_like_for_like_2018_definitions.R")   # a few seconds
 source("3_other_causes_split.R")               # a few seconds; one of its checks reads an output of script 1
 source("4_figures_by_period.R")                # a few seconds; draws from two outputs of script 2
+source("5_contour_plots.R")                    # about half a minute; draws from an output of script 1
 ```
 
-Each script writes CSV files to `output/`, which it creates, and prints its checks and a short summary. Script 4 writes its two charts there as SVG and PNG, with the numbers plotted and the captions as text. The header of each script lists its outputs and its methods. Outputs are not stored here.
+Each script writes CSV files to `output/`, which it creates, and prints its checks and a short summary. Script 4 writes its two charts there as SVG and PNG, with the numbers plotted and the captions as text. Script 5 does the same for its contour plots, in `output/contours/`. The header of each script lists its outputs and its methods. Outputs are not stored here.
 
 ## Methods in brief
 
@@ -60,6 +62,7 @@ Each script writes CSV files to `output/`, which it creates, and prints its chec
 - **Gap** = rate in area A minus rate in area B. **Ratio** = rate in A divided by rate in B. Script 1 also gives the **rate ratio** from the within-year Poisson model of the 2026 paper (deaths on area, age group and sex, with log population as offset).
 - **Excess deaths** = deaths observed in A minus the deaths expected at B’s age- and sex-specific rates in the same year. A period figure is the mean of the annual figures.
 - **Intervals** are 95% and allow only for Poisson variation in the deaths, so they are too narrow: they ignore error in the population estimates and in the coding of causes.
+- **Contour plots** (script 5) show the unadjusted rate ratio in each year and five-year age group, as a percentage excess, on the cause groups of the 2026 extract. A single cell often holds few deaths. One version of each plot gives zero excess to cells with fewer than 20 deaths in the two areas together; the other leaves those cells grey and puts a dot on every cell whose excess cannot be told from zero at the 5% level, by an exact test that makes no allowance for the number of cells tested.
 - Deaths are counted by year of registration.
 
 ## Cause definitions
@@ -109,6 +112,7 @@ Script 3 lists its 21 categories and five groups, with their codes, at the top o
 - Script 1 checks its Poisson fit against `glm()`.
 - Script 2 compares the sources of deaths cell by cell wherever two of them cover the same deaths, and recomputes the excess deaths published in the 2018 paper.
 - Script 3 checks that its categories add up to all causes in every age group, area and period, and compares its NOMIS rates with the rates from the ONS extract.
+- Script 5 was compared with contour plots of the same data drawn independently in Stata. Of the 15,390 points in the 18 plots, 96.6% fall in the same colour band and the rest in the band next to it, nearly all with values close to a cut. Its own drawing was then checked point by point: every cell is drawn in the colour that its value calls for.
 
 ## Licence and attribution
 
