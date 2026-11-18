@@ -1,6 +1,6 @@
 # =====================================================================
 # North-South divide in English mortality by cause of death, 1981-2025
-# Script 1 of 6: cause decomposition, with London separated from the rest of the South
+# Script 1 of 7: cause decomposition, with London separated from the rest of the South
 #
 # Iain Buchan, 15 Nov 2026. Exploratory work in progress; not peer reviewed.
 #

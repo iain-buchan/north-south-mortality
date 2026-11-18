@@ -19,6 +19,7 @@ It follows two papers:
 | [4_figures_by_period.R](4_figures_by_period.R) | Two charts from the output of script 2, as SVG and PNG: the North–South gap in standardised death rates and the percentage northern excess at ages 25–49, by cause and sex, in six periods from 1981–90 to 2023–25 |
 | [5_contour_plots.R](5_contour_plots.R) | Contour plots from an output of script 1, as SVG and PNG: the percentage northern excess in every year and five-year age group, 1981–2025, for six cause groups and for persons, men and women. Each plot is drawn twice: once as a plain contour plot, and once with the cells that have too few deaths left grey, the cells with no clear excess marked, and colours that readers with any type of colour vision can tell apart |
 | [6_pooled_cells_and_cohorts.R](6_pooled_cells_and_cohorts.R) | Pooled cells and birth cohorts from an output of script 1: the northern excess in five-year age groups and five-year periods, with exact intervals; death rates by age band and period for the North, the South, the South excluding London, and London; and age–period–cohort models of the North:South rate ratio for drug and alcohol deaths. Three charts, as SVG and PNG |
+| [7_life_expectancy.R](7_life_expectancy.R) | Life expectancy from an output of script 1: life expectancy at birth in the North and the South, by sex, in every year and in ten periods; the gap between them divided among the ages and causes of death that make it up, with intervals; and the chance of dying between the ages of 25 and 65. Two charts, as SVG and PNG |
 | [data/](data/) | The input files below |
 
 ## Data
@@ -53,9 +54,10 @@ source("3_other_causes_split.R")               # a few seconds; one of its check
 source("4_figures_by_period.R")                # a few seconds; draws from two outputs of script 2
 source("5_contour_plots.R")                    # about half a minute; draws from an output of script 1
 source("6_pooled_cells_and_cohorts.R")         # about a minute; draws from an output of script 1
+source("7_life_expectancy.R")                  # about ten seconds; draws from an output of script 1
 ```
 
-Each script writes CSV files to `output/`, which it creates, and prints its checks and a short summary. Script 4 writes its two charts there as SVG and PNG, with the numbers plotted and the captions as text. Scripts 5 and 6 do the same for their plots, in `output/contours/` and `output/pooled/`. The header of each script lists its outputs and its methods. Outputs are not stored here.
+Each script writes CSV files to `output/`, which it creates, and prints its checks and a short summary. Script 4 writes its two charts there as SVG and PNG, with the numbers plotted and the captions as text. Scripts 5, 6 and 7 do the same for their plots, in `output/contours/`, `output/pooled/` and `output/life_expectancy/`. The header of each script lists its outputs and its methods. Outputs are not stored here.
 
 ## Methods in brief
 
@@ -66,6 +68,7 @@ Each script writes CSV files to `output/`, which it creates, and prints its chec
 - **Intervals** are 95% and allow only for Poisson variation in the deaths, so they are too narrow: they ignore error in the population estimates and in the coding of causes.
 - **Contour plots** (script 5) show the unadjusted rate ratio in each year and five-year age group, as a percentage excess, on the cause groups of the 2026 extract. A single cell often holds few deaths. One version of each plot gives zero excess to cells with fewer than 20 deaths in the two areas together; the other leaves those cells grey and puts a dot on every cell whose excess cannot be told from zero at the 5% level, by an exact test that makes no allowance for the number of cells tested.
 - **Age–period–cohort models** (script 6) are fitted to the North:South rate ratio in cells of five-year age group by five-year period. Given the deaths in a cell, the number in the North is binomial, so a logistic model with the log ratio of person-years as offset models the log rate ratio directly. Overdispersion is allowed for. A steady trend cannot be divided between period and cohort: it is given to cohort, and the tests of period and of cohort are tests of curvature.
+- **Life expectancy** (script 7) is period life expectancy at birth from abridged life tables with 19 age groups, the last one open at 85. The gap between South and North is divided among the age groups by Arriaga’s method. His formula treats its two populations differently, so the answer depends a little on which is taken first: the contribution of an age group is the mean of the two answers, and both are in the output. Within an age group the contribution is shared among causes in proportion to their part of the difference in death rates, on the cause groups of the 2026 extract. Intervals for life expectancy and the gap are Chiang’s; those for the contributions come from 2,000 simulated sets of deaths.
 - Deaths are counted by year of registration.
 
 ## Cause definitions
@@ -117,6 +120,7 @@ Script 3 lists its 21 categories and five groups, with their codes, at the top o
 - Script 3 checks that its categories add up to all causes in every age group, area and period, and compares its NOMIS rates with the rates from the ONS extract.
 - Script 5 was compared with contour plots of the same data drawn independently in Stata. Of the 15,390 points in the 18 plots, 96.6% fall in the same colour band and the rest in the band next to it, nearly all with values close to a cut. Its own drawing was then checked point by point: every cell is drawn in the colour that its value calls for. The colours of its second version were chosen by measuring colour differences in normal vision and under simulated colour-vision deficiency; the figures are in the header of the script.
 - Script 6: its standardised rates agree with those of script 1 to three decimal places, and its age–period–cohort fits were reproduced with a second formulation (Poisson models with a separate baseline for every age group and period).
+- Script 7 checks, as it runs, that its contributions add up to the gap, that Arriaga’s formula gives the same answer as replacing the death rates one age group at a time, and that the simulated interval for the gap agrees with Chiang’s. Life expectancy for England in 2021–23 comes to 79.2 years for men and 83.1 for women, against 79.1 and 83.0 in the ONS national life tables, which use single years of age. Its estimates were recomputed with separately written code and agree to the last decimal place written. The mean of Arriaga’s two answers was compared with a decomposition by continuous change (in the manner of Horiuchi, Wilmoth and Pletcher, 2008), which does not depend on which population is taken first: the age bands’ shares of the gap agree to within 0.1 percentage points, where the two answers themselves differ by up to 2.4.
 
 ## Licence and attribution
 

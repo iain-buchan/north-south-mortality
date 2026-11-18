@@ -1,6 +1,6 @@
 # =====================================================================
 # North-South divide in English mortality by cause of death, 1981-2025
-# Script 6 of 6: pooled cells and birth cohorts - death rates beside the ratios, London taken out of
+# Script 6 of 7: pooled cells and birth cohorts - death rates beside the ratios, London taken out of
 #                the South, and age-period-cohort models of the excess in drug and alcohol deaths
 #
 # Iain Buchan, 18 Nov 2026. Exploratory work in progress; not peer reviewed.
