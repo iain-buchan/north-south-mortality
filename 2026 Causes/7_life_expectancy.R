@@ -329,13 +329,15 @@ writeLines(enc2utf8(captions), file.path(outdir, "life_expectancy_captions.txt")
 cat("\nLife expectancy and the division of the gap written to", normalizePath(outdir), "\n")
 cat(sprintf("Check against the ONS national life tables, England, 2021-23: men %.2f here and %.1f published; women %.2f and %.1f\n",
             eng_e0[["men"]], ons_england_2021_23[["men"]], eng_e0[["women"]], ons_england_2021_23[["women"]]))
-show <- function(it) res %>% filter(item %in% it, period %in% c("1981-84", "2000-04", "2015-19", "2023-25")) %>%
-  transmute(sex, period, item, years = sprintf("%.2f (%.2f to %.2f)", years, years_lo, years_hi), share_pct = ifelse(item == "gap", "", sprintf("%.0f (%.0f to %.0f)", share_pct, share_lo, share_hi)))
+keep <- c("1981-84", "2000-04", "2015-19", "2023-25")
 cat(sprintf("Simulated interval for the gap against Chiang's: widths differ by %.1f%% at most\n", 100 * max(abs(chk$width_sim / chk$width_chiang - 1))))
 cat(sprintf("Arriaga's method, North first against South first: an age band's share of the gap differs by %.1f percentage points at most\n", direction_range))
-cat("\nGap in life expectancy at birth, South minus North, years (95% interval)\n"); print(as.data.frame(show("gap") %>% select(-share_pct, -item)), row.names = FALSE)
+cat("\nGap in life expectancy at birth, South minus North, years (95% interval)\n")
+print(as.data.frame(by_period %>% filter(period %in% keep) %>% arrange(desc(sex), period) %>%
+                      transmute(sex, period, gap = sprintf("%.2f (%.2f to %.2f)", gap, gap - z975 * gap_se, gap + z975 * gap_se))), row.names = FALSE)
 cat("\nShare of the gap from deaths at ages 25-44 and at ages 25-64, and from cardiovascular disease, % (95% interval)\n")
-print(as.data.frame(show(c("25-44", "25-64", "Cardiovascular")) %>% select(-years) %>% pivot_wider(names_from = item, values_from = share_pct)), row.names = FALSE)
+print(as.data.frame(res %>% filter(item %in% c("25-44", "25-64", "Cardiovascular"), period %in% keep) %>%
+                      transmute(sex, period, item, share = sprintf("%.1f (%.1f to %.1f)", share_pct, share_lo, share_hi)) %>% pivot_wider(names_from = item, values_from = share)), row.names = FALSE)
 cat("\nChance of dying between the ages of 25 and 65 at the death rates of each period, % (95% interval)\n")
-print(as.data.frame(by_period %>% filter(period %in% c("1981-84", "2000-04", "2015-19", "2023-25")) %>% arrange(desc(sex), period) %>%
+print(as.data.frame(by_period %>% filter(period %in% keep) %>% arrange(desc(sex), period) %>%
                       transmute(sex, period, North = sprintf("%.1f (%.1f to %.1f)", dying_North, dying_lo_North, dying_hi_North), South = sprintf("%.1f (%.1f to %.1f)", dying_South, dying_lo_South, dying_hi_South))), row.names = FALSE)
