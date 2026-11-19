@@ -277,7 +277,7 @@ save_fig <- function(p, name, w, h) {
   svg_file <- file.path(outdir, paste0(name, ".svg"))
   ggsave(svg_file, p, device = svglite::svglite, width = w, height = h)
   plain_svg(svg_file)
-  ggsave(file.path(outdir, paste0(name, ".png")), p, width = w, height = h, dpi = 200)
+  ggsave(file.path(outdir, paste0(name, ".png")), p, width = w, height = h, dpi = 200, bg = "white")
 }
 base_theme <- theme_minimal(base_size = 9, base_family = fig_font) +
   theme(text = element_text(colour = ink), axis.text = element_text(colour = ink2), panel.grid.minor = element_blank(),
