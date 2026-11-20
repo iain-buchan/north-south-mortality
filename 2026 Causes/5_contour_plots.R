@@ -1,6 +1,6 @@
 # =====================================================================
 # North-South divide in English mortality by cause of death, 1981-2025
-# Script 5 of 7: contour plots - the northern excess in every year and five-year age group, for six
+# Script 5 of 9: contour plots - the northern excess in every year and five-year age group, for six
 #                cause groups and for persons, men and women
 #
 # Iain Buchan, 18 Nov 2026. Exploratory work in progress; not peer reviewed.

@@ -1,6 +1,6 @@
 # =====================================================================
 # North-South divide in English mortality by cause of death, 1981-2025
-# Script 4 of 7: figures - the gap and the northern excess at ages 25-49, by cause, sex and period
+# Script 4 of 9: figures - the gap and the northern excess at ages 25-49, by cause, sex and period
 #
 # Iain Buchan, 16 Nov 2026. Exploratory work in progress; not peer reviewed.
 #

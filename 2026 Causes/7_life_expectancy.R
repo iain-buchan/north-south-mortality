@@ -1,6 +1,6 @@
 # =====================================================================
 # North-South divide in English mortality by cause of death, 1981-2025
-# Script 7 of 7: life expectancy - the gap in life expectancy at birth between North and South, and
+# Script 7 of 9: life expectancy - the gap in life expectancy at birth between North and South, and
 #                the ages and causes of death that make it up
 #
 # Iain Buchan, 18 Nov 2026. Exploratory work in progress; not peer reviewed.

@@ -1,6 +1,6 @@
 # =====================================================================
 # North-South divide in English mortality by cause of death, 1981-2025
-# Script 3 of 7: what is inside the residual 'other causes'
+# Script 3 of 9: what is inside the residual 'other causes'
 #
 # Iain Buchan, 15 Nov 2026. Exploratory work in progress; not peer reviewed.
 #
